@@ -11,17 +11,17 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primaryColor: Colors.blue,
       ),
-      home: new RandomWords(),
+      home: new WifiList(),
     );
   }
 }
 
-class RandomWords extends StatefulWidget {
+class WifiList extends StatefulWidget {
   @override
-  RandomWordsState createState() => new RandomWordsState();
+  WifiListState createState() => new WifiListState();
 }
 
-class RandomWordsState extends State<RandomWords> {
+class WifiListState extends State<WifiList> {
   final List<String> _suggestions = <String>[];
   final Set<String> _saved = new Set<String>();
   final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
