@@ -7,15 +7,6 @@ class HomePage extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
@@ -25,15 +16,6 @@ class HomePage extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -46,47 +28,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
+      drawer: _buildDrawer(),  // 侧边栏
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
@@ -106,4 +60,77 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+
+  // 抽屉布局
+  Widget _buildDrawer() {
+    return new Drawer(     //侧边栏按钮Drawer
+      child: new ListView(
+        children: <Widget>[
+          new UserAccountsDrawerHeader(   //Material内置控件
+            accountName: new Text('ZR'), //用户名
+            accountEmail: new Text('zhengrui504@163.com'),  //用户邮箱
+            currentAccountPicture: new GestureDetector( //用户头像
+              onTap: () => print('current user'),
+              child: new CircleAvatar(    //圆形图标控件
+                backgroundImage: new NetworkImage('https://avatars0.githubusercontent.com/u/6859852?s=460&v=4'),//图片调取自网络
+              ),
+            ),
+            otherAccountsPictures: <Widget>[    //粉丝头像
+              new GestureDetector(    //手势探测器，可以识别各种手势，这里只用到了onTap
+                onTap: () => print('other user'), //暂且先打印一下信息吧，以后再添加跳转页面的逻辑
+                child: new CircleAvatar(
+                  backgroundImage: new NetworkImage('https://upload.jianshu.io/users/upload_avatars/10878817/240ab127-e41b-496b-80d6-fc6c0c99f291?imageMogr2/auto-orient/strip|imageView2/1/w/240/h/240'),
+                ),
+              ),
+              new GestureDetector(
+                onTap: () => print('other user'),
+                child: new CircleAvatar(
+                  backgroundImage: new NetworkImage('https://upload.jianshu.io/users/upload_avatars/8346438/e3e45f12-b3c2-45a1-95ac-a608fa3b8960?imageMogr2/auto-orient/strip|imageView2/1/w/240/h/240'),
+                ),
+              ),
+            ],
+            decoration: new BoxDecoration(    //用一个BoxDecoration装饰器提供背景图片
+              image: new DecorationImage(
+                fit: BoxFit.fill,
+                // image: new NetworkImage('https://raw.githubusercontent.com/flutter/website/master/_includes/code/layout/lakes/images/lake.jpg')
+                //可以试试图片调取自本地。调用本地资源，需要到pubspec.yaml中配置文件路径
+                image: new ExactAssetImage('images/lake.jpg'),
+              ),
+            ),
+          ),
+          new ListTile(   //第一个功能项
+              title: new Text('First Page'),
+              trailing: new Icon(Icons.arrow_upward),
+              onTap: () {
+                Navigator.of(context).pop();
+//                Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new SidebarPage('First Page')));
+              }
+          ),
+          new ListTile(   //第二个功能项
+              title: new Text('Second Page'),
+              trailing: new Icon(Icons.arrow_right),
+              onTap: () {
+                Navigator.of(context).pop();
+//                Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new SidebarPage('Second Page')));
+              }
+          ),
+          new ListTile(   //第二个功能项
+              title: new Text('Second Page'),
+              trailing: new Icon(Icons.arrow_right),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed('/a');
+              }
+          ),
+          new Divider(),    //分割线控件
+          new ListTile(   //退出按钮
+            title: new Text('Close'),
+            trailing: new Icon(Icons.cancel),
+            onTap: () => Navigator.of(context).pop(),   //点击后收起侧边栏
+          ),
+        ],
+      ),
+    );
+  }
+
 }
