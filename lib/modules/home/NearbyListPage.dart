@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'dart:convert';
+import 'dart:async';
+import 'dart:io';
 
 class NearbyListPage extends StatefulWidget {
   @override
@@ -7,38 +10,83 @@ class NearbyListPage extends StatefulWidget {
 }
 
 class RandomWordsState extends State<NearbyListPage> {
-  final List<WordPair> _suggestions = <WordPair>[];
-  final Set<WordPair> _saved = new Set<WordPair>();
-  final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
+  final String _url = 'http://apis.juhe.cn/wifi/local?';
+  final double lon = 116.366324;
+  final double lat = 39.905859;
+  final int range = 3000;
+
+  //HTTP请求的函数返回值为异步控件Future
+  Future<String> get(double lon, double lat, int range) async {
+    var httpClient = new HttpClient();
+    // ignore: unnecessary_brace_in_string_interps
+    var request = await httpClient.getUrl(Uri.parse('${_url}&lon=$lon&lat=$lat&r=$range&type=1&key=85e9b14aa37e5929e14d961f73a40367'));
+    var response = await request.close();
+    return await response.transform(utf8.decoder).join();
+  }
+
+  Future<Null> loadData() async{
+    await get(lon, lat, range);   //注意await关键字
+    if (!mounted) return; //异步处理，防止报错
+    setState(() {});//什么都不做，只为触发RefreshIndicator的子控件刷新
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      body: _buildSuggestions(),
+  Widget build(BuildContext context){
+    return new RefreshIndicator(
+      child: new FutureBuilder(   //用于懒加载的FutureBuilder对象
+        future: get(lon, lat, range),   //HTTP请求获取数据，将被AsyncSnapshot对象监视
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:        //get未执行时
+            case ConnectionState.waiting:     //get正在执行时
+              return new Center(
+                child: new Card(
+                  child: new Text('loading...'),    //在页面中央显示正在加载
+                ),
+              ) ;
+            default:
+              if (snapshot.hasError)    //get执行完成但出现异常
+                return new Text('Error: ${snapshot.error}');
+              else  //get正常执行完成
+                // 创建列表，列表数据来源于snapshot的返回值，而snapshot就是get(widget.newsType)执行完毕时的快照
+                // get(widget.newsType)执行完毕时的快照即函数最后的返回值。
+                return createListView(context, snapshot);
+          }
+        },
+      ),
+      onRefresh: loadData,
     );
   }
 
-  Widget _buildSuggestions() {
-    return new ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemBuilder: (BuildContext _context, int i) {
-          if (i.isOdd) {
-            return const Divider();
-          }
-          final int index = i ~/ 2;
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10));
-          }
-          return _buildRow(_suggestions[index]);
-        });
+  Widget createListView(BuildContext context, AsyncSnapshot snapshot){
+    // print(snapshot.data);
+    List values;
+    values = jsonDecode(snapshot.data)['result']!=null?jsonDecode(snapshot.data)['result']['data']:[''];
+    switch (values.length) {
+      case 1:   //没有获取到数据，则返回请求失败的原因
+        return new Center(
+          child: new Card(
+            child: new Text(jsonDecode(snapshot.data)['reason']),
+          ),
+        );
+      default:
+        return  new ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(16.0),
+            itemCount: values == null ? 0 : values.length,
+            itemBuilder: (context, i) {
+              return _newsRow(values[i]["name"]);
+            }
+        );
+    }
   }
 
-  Widget _buildRow(WordPair pair) {
+  Widget _newsRow(String pair) {
     final bool alreadySaved = _saved.contains(pair);
 
     return new ListTile(
       title: new Text(
-        pair.asPascalCase,
+        pair,
         style: _biggerFont,
       ),
       trailing: new Icon(
@@ -48,16 +96,18 @@ class RandomWordsState extends State<NearbyListPage> {
       onTap: (){
         setState(() {
 
-          if(alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
+//          if(alreadySaved) {
+//            _saved.remove(pair);
+//          } else {
+//            _saved.add(pair);
+//          }
         });
       },
     );
   }
 
+
+  
   void _pushSaved() {
     Navigator.of(context).push(
       new MaterialPageRoute<void>(
