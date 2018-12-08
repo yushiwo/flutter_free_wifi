@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
+import 'package:flutter_free_wifi/modules/detail/WifiDetailPage.dart';
 import '../global/model/wifi_model.dart';  // 导入model
 import 'dart:convert';
 import 'dart:async';
@@ -85,7 +86,7 @@ class RandomWordsState extends State<NearbyListPage> {
   }
 
   Widget _newsRow(Wifi wifi) {
-    
+
     return new ListTile(
       title: new Text(
         wifi.name,
@@ -96,10 +97,13 @@ class RandomWordsState extends State<NearbyListPage> {
         style: _biggerFont,
       ),
       onTap: (){  // 点击应该跳转详情页
-        setState(() {
-        });
+        showDetailPage(wifi)
       },
     );
+  }
+
+  void showDetailPage(Wifi wifi) {
+    Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new WifiDetailPage(wifi)));
   }
 
 //  Widget _newsRow(String pair) {
