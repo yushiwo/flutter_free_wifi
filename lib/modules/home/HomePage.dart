@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import './NearbyListPage.dart';
-import '../global/model/wifi_model.dart';  // 导入model
 
 class HomePage extends StatelessWidget {
   // This widget is the root of your application.
@@ -26,13 +25,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: _buildDrawer(),  // 侧边栏
 
-      body: new NearbyListPage(),
+      body: new NearbyListPage(),  // 主页
     );
   }
 

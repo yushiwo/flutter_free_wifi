@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
 import 'package:flutter_free_wifi/modules/detail/WifiDetailPage.dart';
 import '../global/model/wifi_model.dart';  // 导入model
 import 'dart:convert';
@@ -97,7 +96,7 @@ class RandomWordsState extends State<NearbyListPage> {
         style: _biggerFont,
       ),
       onTap: (){  // 点击应该跳转详情页
-        showDetailPage(wifi)
+        showDetailPage(wifi);
       },
     );
   }
@@ -106,62 +105,4 @@ class RandomWordsState extends State<NearbyListPage> {
     Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new WifiDetailPage(wifi)));
   }
 
-//  Widget _newsRow(String pair) {
-//    final bool alreadySaved = _saved.contains(pair);
-//
-//    return new ListTile(
-//      title: new Text(
-//        pair,
-//        style: _biggerFont,
-//      ),
-//      trailing: new Icon(
-//        alreadySaved ? Icons.favorite : Icons.favorite_border,
-//        color: alreadySaved ? Colors.red : null,
-//      ),
-//      onTap: (){
-//        setState(() {
-//
-////          if(alreadySaved) {
-////            _saved.remove(pair);
-////          } else {
-////            _saved.add(pair);
-////          }
-//        });
-//      },
-//    );
-//  }
-
-
-  
-//  void _pushSaved() {
-//    Navigator.of(context).push(
-//      new MaterialPageRoute<void>(
-//        builder: (BuildContext context) {
-//          final Iterable<ListTile> tiles = _saved.map(
-//                (WordPair pair) {
-//              return new ListTile(
-//                title: new Text(
-//                  pair.asPascalCase,
-//                  style: _biggerFont,
-//                ),
-//              );
-//            },
-//          );
-//          final List<Widget> divided = ListTile
-//              .divideTiles(
-//            context: context,
-//            tiles: tiles,
-//          )
-//              .toList();
-//
-//          return new Scaffold(         // 新增 6 行代码开始 ...
-//            appBar: new AppBar(
-//              title: const Text('Saved Suggestions'),
-//            ),
-//            body: new ListView(children: divided),
-//          );                           // ... 新增代码段结束.
-//        },
-//      ),
-//    );
-//  }
 }
