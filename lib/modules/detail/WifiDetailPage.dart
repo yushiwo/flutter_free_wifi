@@ -17,8 +17,15 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.wifi.name),
+        actions: <Widget>[
+          new IconButton(icon: const Icon(Icons.favorite), onPressed: _handleFavButtonClicked),
+        ],
       ),
 
     );
+  }
+
+  void _handleFavButtonClicked() {
+
   }
 }
