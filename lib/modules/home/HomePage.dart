@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_free_wifi/modules/detail/WifiDetailPage.dart';
+import 'package:flutter_free_wifi/modules/global/model/wifi_model.dart';
 import './NearbyListPage.dart';
 
 class HomePage extends StatelessWidget {
@@ -76,10 +78,12 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           new ListTile(   //第一个功能项
-              title: new Text('First Page'),
+              title: new Text('详情页'),
               trailing: new Icon(Icons.arrow_upward),
               onTap: () {
                 Navigator.of(context).pop();
+                // ignore: not_enough_required_arguments
+                Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new WifiDetailPage(new Wifi(null, null, null, null, null, null, null, null, null, 0))));
 //                Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new SidebarPage('First Page')));
               }
           ),
