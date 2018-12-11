@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_free_wifi/modules/global/util/Util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 import '../global/model/wifi_model.dart';  // 导入model
 
 class WifiDetailPage extends StatefulWidget {
@@ -16,7 +16,6 @@ class WifiDetailPage extends StatefulWidget {
 
 class _WifiDetailPageState extends State<WifiDetailPage> {
   final String mUserName = "userName";
-  final _userNameController = new TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -60,12 +59,29 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 //    });
 
 
-    Util.save(widget.wifi);
+//    Util.save(widget.wifi);
+//
+//    Future<List<Wifi>> favWifiList = Util.getFavWifiList();
+//    favWifiList.then((List<Wifi> favWifiList){
+//      print("我的收藏内容是： " + favWifiList.toString());
+//    });
 
-    Future<List<Wifi>> favWifiList = Util.getFavWifiList();
-    favWifiList.then((List<Wifi> favWifiList){
-      print("我的收藏内容是： " + favWifiList.toString());
+    WifiProvider wifiProvider = new WifiProvider();
+    Future<WifiProvider> p = wifiProvider.open();
+    p.then((WifiProvider pp){
+      Future<Wifi> w1 =  pp.insert(widget.wifi);
+      w1.then((Wifi wifi){
+        print("111 = " + wifi.toString());
+      });
+
+      Future<List<Wifi>> w2 = pp.getAllWifis();
+      w2.then((List<Wifi> wifis){
+        print("取出 = " + wifis.toString());
+      });
     });
 
+
   }
+
+
 }
