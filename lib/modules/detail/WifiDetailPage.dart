@@ -1,7 +1,15 @@
+import 'package:amap_location/amap_location.dart';
+import 'package:amap_location/amap_location_option.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import '../global/model/wifi_model.dart';  // 导入model
+import 'package:location/location.dart';
+
+import 'package:flutter/material.dart';
+import 'package:amap_location/amap_location.dart';
+import 'package:simple_permissions/simple_permissions.dart';
+import 'package:easy_alert/easy_alert.dart';
 
 class WifiDetailPage extends StatefulWidget {
   final Wifi wifi; //定义一个常量，用于保存跳转进来获取到的参数
@@ -50,7 +58,7 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
     return userName;
   }
 
-  void _handleFavButtonClicked() {
+  Future _handleFavButtonClicked() async {
 //    save();
 //
 //    Future<String> userName = get();
@@ -66,22 +74,40 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 //      print("我的收藏内容是： " + favWifiList.toString());
 //    });
 
-    WifiProvider wifiProvider = new WifiProvider();
-    Future<WifiProvider> p = wifiProvider.open();
-    p.then((WifiProvider pp){
-      Future<Wifi> w1 =  pp.insert(widget.wifi);
-      w1.then((Wifi wifi){
-        print("111 = " + wifi.toString());
-      });
 
-      Future<List<Wifi>> w2 = pp.getAllWifis();
-      w2.then((List<Wifi> wifis){
-        print("取出 = " + wifis.toString());
-      });
-    });
+//    WifiProvider wifiProvider = new WifiProvider();
+//    try {
+//      Future<WifiProvider> p = wifiProvider.open();
+//      p.then((WifiProvider pp) {
+//        Future<Wifi> w1 = pp.insert(widget.wifi);
+//        w1.then((Wifi wifi) {
+//          print("111 = " + wifi.toString());
+//        });
+//
+//        Future<List<Wifi>> w2 = pp.getAllWifis();
+//        w2.then((List<Wifi> wifis) {
+//          print("取出 = " + wifis.toString());
+//        });
+//      });
+//    } catch (Exception) {}
+    _checkPersmission();
 
-
+    await AMapLocationClient.startup(new AMapLocationOption( desiredAccuracy:CLLocationAccuracy.kCLLocationAccuracyHundredMeters ));
+    await AMapLocationClient.getLocation(true);
   }
 
+
+  void _checkPersmission() async{
+    bool hasPermission = await SimplePermissions.checkPermission(Permission.WhenInUseLocation);
+    if(!hasPermission){
+      bool requestPermissionResult = (await SimplePermissions.requestPermission(Permission.WhenInUseLocation)) as bool;
+      if(!requestPermissionResult){
+        Alert.alert(context,title: "申请定位权限失败");
+        return;
+      }
+    }
+
+    AMapLocationClient.startLocation();
+  }
 
 }

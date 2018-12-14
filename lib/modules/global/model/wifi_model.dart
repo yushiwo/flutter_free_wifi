@@ -15,7 +15,6 @@ final String columnBaiduLon = 'baidu_lon';
 final String columnLat = 'lat';
 final String columnLon = 'lon';
 final String columnDistance = 'distance';
-final String columnLocation = 'location';
 
 class Wifi {
   int id;
@@ -48,13 +47,12 @@ class Wifi {
       columnBaiduLon: baidu_lon,
       columnLat: lat,
       columnLon: lon,
-      columnDistance: distance,
-      columnLocation: google_lat + google_lon + baidu_lat + baidu_lon
+      columnDistance: distance
     };
 
-    if (id != null) {
-      map[columnId] = id;
-    }
+//    if (id != null) {
+//      map[columnId] = id;
+//    }
 
     return map;
   }
@@ -85,7 +83,7 @@ class WifiProvider {
         onCreate: (Database db, int version) async {
           await db.execute('''
 create table $tableName ( 
-  $columnId text primary key, 
+  $columnId integer primary key autoincrement, 
   $columnName text not null,
   $columnIntro text not null,
   $columnAddress text not null,
@@ -95,12 +93,35 @@ create table $tableName (
   $columnBaiduLon text not null,
   $columnLat text,
   $columnLon text,
-  $columnDistance integer not null,
-  $columnLocation text unique)
+  $columnDistance integer not null)
 ''');
         });
 
     return this;
+  }
+
+
+  Future open1() async {
+
+    var path = await getDatabasesPath();
+
+    db = await openDatabase(path, version: 1,
+        onCreate: (Database db, int version) async {
+          await db.execute('''
+create table $tableName ( 
+  $columnId integer primary key autoincrement, 
+  $columnName text not null,
+  $columnIntro text not null,
+  $columnAddress text not null,
+  $columnGoogleLat text not null,
+  $columnGoogleLon text not null,
+  $columnBaiduLat text not null,
+  $columnBaiduLon text not null,
+  $columnLat text,
+  $columnLon text,
+  $columnDistance integer not null)
+''');
+        });
   }
 
   Future<Wifi> insert(Wifi wifi) async {
