@@ -66,13 +66,14 @@ class RandomWordsState extends State<NearbyListPage> {
     List values;
     values = jsonDecode(snapshot.data)['result']!=null?jsonDecode(snapshot.data)['result']['data']:[''];
     switch (values.length) {
-      case 1:   //没有获取到数据，则返回请求失败的原因
+      case 0:   //没有获取到数据，则返回请求失败的原因
         return new Center(
           child: new Card(
             child: new Text(jsonDecode(snapshot.data)['reason']),
           ),
         );
       default:
+        values.sort((a, b) => a["distance"].compareTo(b["distance"]));
         return  new ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(16.0),

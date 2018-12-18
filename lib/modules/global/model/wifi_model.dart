@@ -17,7 +17,6 @@ final String columnLon = 'lon';
 final String columnDistance = 'distance';
 
 class Wifi {
-  int id;
   String name;
   String intro;
   String address;
@@ -28,6 +27,8 @@ class Wifi {
   String lat;
   String lon;
   int distance;
+
+  int id;
 
   Wifi(this.name, this.intro, this.address, this.google_lat, this.google_lon, this.baidu_lat, this.baidu_lon, this.lat, this.lon, this.distance);
 
@@ -49,11 +50,7 @@ class Wifi {
       columnLon: lon,
       columnDistance: distance
     };
-
-//    if (id != null) {
-//      map[columnId] = id;
-//    }
-
+    
     return map;
   }
 
