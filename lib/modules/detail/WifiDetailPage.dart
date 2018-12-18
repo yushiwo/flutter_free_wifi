@@ -2,12 +2,8 @@ import 'package:amap_location/amap_location.dart';
 import 'package:amap_location/amap_location_option.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sqflite/sqflite.dart';
 import '../global/model/wifi_model.dart';  // 导入model
-import 'package:location/location.dart';
 
-import 'package:flutter/material.dart';
-import 'package:amap_location/amap_location.dart';
 import 'package:simple_permissions/simple_permissions.dart';
 import 'package:easy_alert/easy_alert.dart';
 
@@ -100,7 +96,7 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
   void _checkPersmission() async{
     bool hasPermission = await SimplePermissions.checkPermission(Permission.WhenInUseLocation);
     if(!hasPermission){
-      bool requestPermissionResult = (await SimplePermissions.requestPermission(Permission.WhenInUseLocation)) as bool;
+      var requestPermissionResult = (await SimplePermissions.requestPermission(Permission.WhenInUseLocation)) as bool;
       if(!requestPermissionResult){
         Alert.alert(context,title: "申请定位权限失败");
         return;
