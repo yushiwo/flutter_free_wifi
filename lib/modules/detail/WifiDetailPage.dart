@@ -27,7 +27,7 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
       appBar: AppBar(
         title: Text("详细信息"),
         actions: <Widget>[
-          new IconButton(icon: const Icon(Icons.favorite), onPressed: _handleFavButtonClicked),
+          new IconButton(icon: const Icon(Icons.favorite), onPressed: handleSave),
         ],
       ),
 
@@ -104,6 +104,37 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
     }
 
     AMapLocationClient.startLocation();
+  }
+
+  void handleSave() async {
+    List notes;
+    var db = new WifiDatabaseHelper();
+
+    await db.saveNote(widget.wifi);
+    await db.saveNote(widget.wifi);
+    await db.saveNote(widget.wifi);
+    await db.saveNote(widget.wifi);
+
+    print('=== getAllNotes() ===');
+    notes = await db.getAllNotes();
+    notes.forEach((note) => print(note));
+
+    int count = await db.getCount();
+    print('Count: $count');
+
+    print('=== getNote(1) ===');
+    Wifi note = await db.getNote(1);
+    print(note.toMap());
+
+    notes = await db.getAllNotes();
+    notes.forEach((note) => print(note));
+
+//    print('=== deleteNote(1) ===');
+//    await db.deleteNote(1);
+//    notes = await db.getAllNotes();
+//    notes.forEach((note) => print(note));
+
+    await db.close();
   }
 
 }

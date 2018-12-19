@@ -1,5 +1,6 @@
 // 附近Wi-Fi的数据model
 
+import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 final String tableName = "fav_wifi_list";   // 收藏的wifi列表
@@ -15,6 +16,7 @@ final String columnBaiduLon = 'baidu_lon';
 final String columnLat = 'lat';
 final String columnLon = 'lon';
 final String columnDistance = 'distance';
+final String columnLocation = 'location';
 
 class Wifi {
   String name;
@@ -27,10 +29,23 @@ class Wifi {
   String lat;
   String lon;
   int distance;
-
   int id;
+  String location;
 
-  Wifi(this.name, this.intro, this.address, this.google_lat, this.google_lon, this.baidu_lat, this.baidu_lon, this.lat, this.lon, this.distance);
+  Wifi(this.name, this.intro, this.address, this.google_lat, this.google_lon, this.baidu_lat, this.baidu_lon, this.lat, this.lon, this.distance) {
+    id = null;
+    name = this.name;
+    intro = this.intro;
+    address = this.address;
+    google_lat = this.google_lat;
+    google_lon = this.google_lon;
+    baidu_lat = this.baidu_lat;
+    baidu_lon = this.baidu_lon;
+    lat = this.lat;
+    lon = this.lon;
+    distance = this.distance;
+    location = this.google_lat + this.baidu_lat;
+  }
 
   @override
   String toString() {
@@ -48,13 +63,19 @@ class Wifi {
       columnBaiduLon: baidu_lon,
       columnLat: lat,
       columnLon: lon,
-      columnDistance: distance
+      columnDistance: distance,
+      columnLocation: google_lat + baidu_lat + lat
     };
+
+    if(id != null) {
+      map[columnId] = id;
+    }
     
     return map;
   }
 
   Wifi.fromMap(Map<String, dynamic> map) {
+    id = map[columnId];
     name = map[columnName];
     intro = map[columnIntro];
     address = map[columnAddress];
@@ -65,114 +86,111 @@ class Wifi {
     lat = map[columnLat];
     lon = map[columnLon];
     distance = map[columnDistance];
+    location = map[columnLocation];
   }
 
 }
 
-class WifiProvider {
-  Database db;
+class WifiDatabaseHelper {
+  static final WifiDatabaseHelper _instance = new WifiDatabaseHelper.internal();
 
-  Future<WifiProvider> open() async {
+  factory WifiDatabaseHelper() => _instance;
 
-    var path = await getDatabasesPath();
+  static Database _db;
 
-    db = await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
-          await db.execute('''
-create table $tableName ( 
-  $columnId integer primary key autoincrement, 
-  $columnName text not null,
-  $columnIntro text not null,
-  $columnAddress text not null,
-  $columnGoogleLat text not null,
-  $columnGoogleLon text not null,
-  $columnBaiduLat text not null,
-  $columnBaiduLon text not null,
-  $columnLat text,
-  $columnLon text,
-  $columnDistance integer not null)
-''');
-        });
+  WifiDatabaseHelper.internal();
 
-    return this;
-  }
-
-
-  Future open1() async {
-
-    var path = await getDatabasesPath();
-
-    db = await openDatabase(path, version: 1,
-        onCreate: (Database db, int version) async {
-          await db.execute('''
-create table $tableName ( 
-  $columnId integer primary key autoincrement, 
-  $columnName text not null,
-  $columnIntro text not null,
-  $columnAddress text not null,
-  $columnGoogleLat text not null,
-  $columnGoogleLon text not null,
-  $columnBaiduLat text not null,
-  $columnBaiduLon text not null,
-  $columnLat text,
-  $columnLon text,
-  $columnDistance integer not null)
-''');
-        });
-  }
-
-  Future<Wifi> insert(Wifi wifi) async {
-    wifi.id = await db.insert(tableName, wifi.toMap());
-    return wifi;
-  }
-
-  Future<Wifi> getWifi(int id) async {
-    List<Map> maps = await db.query(tableName,
-        columns: [columnId, columnName, columnIntro, columnAddress, columnGoogleLat, columnGoogleLon,
-        columnBaiduLat, columnBaiduLon, columnLat, columnLon, columnDistance],
-        where: '$columnId = ?',
-        whereArgs: [id]);
-    if (maps.length > 0) {
-      print("maps.length = " + maps.length.toString());
-      return Wifi.fromMap(maps.first);
+  Future<Database> get db async {
+    if (_db != null) {
+      return _db;
     }
+    _db = await initDb();
+
+    return _db;
+  }
+
+  initDb() async {
+    String databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'notes.db');
+
+    await deleteDatabase(path); // just for testing
+
+    var db = await openDatabase(path, version: 1, onCreate: _onCreate);
+    return db;
+  }
+
+  void _onCreate(Database db, int newVersion) async {
+    await db.execute(
+        '''
+        CREATE TABLE $tableName(
+        $columnId integer primary key autoincrement, 
+        $columnName text not null,
+        $columnIntro text not null,
+        $columnAddress text not null,
+        $columnGoogleLat text not null,
+        $columnGoogleLon text not null,
+        $columnBaiduLat text not null,
+        $columnBaiduLon text not null,
+        $columnLat text,
+        $columnLon text,
+        $columnDistance integer not null,
+        $columnLocation text unique)
+        ''');
+  }
+
+  Future<int> saveNote(Wifi wifi) async {
+    var dbClient = await db;
+//    var result = await dbClient.insert(tableNote, note.toMap());
+    var result = await dbClient.rawInsert(
+        'INSERT OR REPLACE INTO $tableName ($columnName, $columnIntro, $columnAddress, $columnGoogleLat, $columnGoogleLon, $columnBaiduLat, $columnBaiduLon, $columnLat, $columnLon, $columnDistance, $columnLocation) '
+            'VALUES (\'${wifi.name}\', \'${wifi.intro}\', \'${wifi.address}\', \'${wifi.google_lat}\', \'${wifi.google_lon}\', \'${wifi.baidu_lat}\', \'${wifi.baidu_lon}\', \'${wifi.lat}\', \'${wifi.lon}\', \'${wifi.distance}\', \'${wifi.location}\')');
+
+    return result;
+  }
+
+  Future<List> getAllNotes() async {
+    var dbClient = await db;
+//    var result = await dbClient.query(tableNote, columns: [columnId, columnTitle, columnDescription]);
+    var result = await dbClient.rawQuery('SELECT * FROM $tableName');
+
+    return result.toList();
+  }
+
+  Future<int> getCount() async {
+    var dbClient = await db;
+    return Sqflite.firstIntValue(await dbClient.rawQuery('SELECT COUNT(*) FROM $tableName'));
+  }
+
+  Future<Wifi> getNote(int id) async {
+    var dbClient = await db;
+//    List<Map> result = await dbClient.query(tableName,
+//        columns: [columnId, columnTitle, columnDescription],
+//        where: '$columnId = ?',
+//        whereArgs: [id]);
+    var result = await dbClient.rawQuery('SELECT * FROM $tableName WHERE $columnId = $id');
+
+    if (result.length > 0) {
+      return new Wifi.fromMap(result.first);
+    }
+
     return null;
   }
 
-  Future<Wifi> getFirstWifi() async {
-    List<Map> maps = await db.query(tableName,
-        columns: [columnId, columnName, columnIntro, columnAddress, columnGoogleLat, columnGoogleLon,
-        columnBaiduLat, columnBaiduLon, columnLat, columnLon, columnDistance]);
-    if (maps.length > 0) {
-      print("maps.length = " + maps.length.toString());
-      return Wifi.fromMap(maps.first);
-    }
-    return null;
+  Future<int> deleteNote(int id) async {
+    var dbClient = await db;
+    return await dbClient.delete(tableName, where: '$columnId = ?', whereArgs: [id]);
+//    return await dbClient.rawDelete('DELETE FROM $tableNote WHERE $columnId = $id');
   }
 
-  Future<List<Wifi>> getAllWifis() async {
-    List<Map> maps = await db.query(tableName,
-        columns: [columnId, columnName, columnIntro, columnAddress, columnGoogleLat, columnGoogleLon,
-        columnBaiduLat, columnBaiduLon, columnLat, columnLon, columnDistance]);
-    if (maps.length > 0) {
-      List<Wifi> result = new List();
-      for(int i = 0; i < maps.length; i++) {
-        result.add(Wifi.fromMap(maps[i]));
-      }
-      print("maps.length = " + maps.length.toString());
-      return result;
-    }
-    return null;
+  Future<int> updateNote(Wifi wifi) async {
+    var dbClient = await db;
+    return await dbClient.update(tableName, wifi.toMap(), where: "$columnId = ?", whereArgs: [wifi.id]);
+//    return await dbClient.rawUpdate(
+//        'UPDATE $tableNote SET $columnTitle = \'${note.title}\', $columnDescription = \'${note.description}\' WHERE $columnId = ${note.id}');
   }
 
-  Future<int> delete(int id) async {
-    return await db.delete(tableName, where: '$columnId = ?', whereArgs: [id]);
+  Future close() async {
+    var dbClient = await db;
+    return dbClient.close();
   }
-
-  Future<int> update(Wifi wifi) async {
-    return await db.update(tableName, wifi.toMap(),
-        where: '$columnId = ?', whereArgs: [wifi.id]);
-  }
-
-  Future close() async => db.close();
 }
