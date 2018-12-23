@@ -27,6 +27,11 @@ class FavListState extends State<FavListPage> {
     return db.getAllNotes();
   }
 
+  Future<int> deleteWifi(Wifi wifi) {
+    var db = new WifiDatabaseHelper();
+    return db.deleteNote(wifi.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -76,15 +81,12 @@ class FavListState extends State<FavListPage> {
         wifi.name,
         style: _biggerFont,
       ),
-      trailing: new Text(
-        wifi.distance.toString(),
-        style: _biggerFont,
-      ),
       onTap: (){  // 点击应该跳转详情页
         showDetailPage(wifi);
       },
     );
   }
+
 
   void showDetailPage(Wifi wifi) {
     Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new WifiDetailPage(wifi)));
