@@ -124,7 +124,7 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 
     print('=== getNote(1) ===');
     Wifi note = await db.getNote(1);
-    print(note.toMap());
+//    print(note.toMap());
 
     notes = await db.getAllNotes();
     notes.forEach((note) => print(note));
@@ -134,7 +134,7 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 //    notes = await db.getAllNotes();
 //    notes.forEach((note) => print(note));
 
-    await db.close();
+//    await db.close();
   }
 
 }

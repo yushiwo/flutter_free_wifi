@@ -44,7 +44,12 @@ class Wifi {
     lat = this.lat;
     lon = this.lon;
     distance = this.distance;
-    location = this.google_lat + this.baidu_lat;
+    if (this.google_lat == null || this.baidu_lat == null) {
+      location = distance.toString();
+    } else {
+      location = "" + this.google_lat + this.baidu_lat;
+    }
+
   }
 
   @override
@@ -148,12 +153,18 @@ class WifiDatabaseHelper {
     return result;
   }
 
-  Future<List> getAllNotes() async {
+  Future<List<Wifi>> getAllNotes() async {
     var dbClient = await db;
 //    var result = await dbClient.query(tableNote, columns: [columnId, columnTitle, columnDescription]);
     var result = await dbClient.rawQuery('SELECT * FROM $tableName');
 
-    return result.toList();
+    List<Wifi> wifis = List();
+//    var resultList = result.toList();
+    for(int i = 0; i < result.length; i ++) {
+      wifis.add(new Wifi.fromMap(result[i]));
+    }
+    return wifis;
+//    return result.toList();
   }
 
   Future<int> getCount() async {

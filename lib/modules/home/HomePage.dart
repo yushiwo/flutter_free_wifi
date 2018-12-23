@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_free_wifi/modules/detail/WifiDetailPage.dart';
+import 'package:flutter_free_wifi/modules/fav/FavListPage.dart';
 import 'package:flutter_free_wifi/modules/global/model/wifi_model.dart';
 import './NearbyListPage.dart';
 
@@ -88,11 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
               }
           ),
           new ListTile(   //第二个功能项
-              title: new Text('Second Page'),
+              title: new Text('收藏页'),
               trailing: new Icon(Icons.arrow_right),
               onTap: () {
                 Navigator.of(context).pop();
-//                Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new SidebarPage('Second Page')));
+                Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new FavListPage()));
               }
           ),
           new ListTile(   //第二个功能项
