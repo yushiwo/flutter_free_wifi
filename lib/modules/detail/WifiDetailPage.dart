@@ -7,6 +7,12 @@ import '../global/model/wifi_model.dart';  // 导入model
 import 'package:simple_permissions/simple_permissions.dart';
 import 'package:easy_alert/easy_alert.dart';
 
+// 标题栏：标题，收藏和取消收藏按钮
+// wifi名称
+// wifi详情信息
+// 点击导航：toast提示待开发
+//
+
 class WifiDetailPage extends StatefulWidget {
   final Wifi wifi; //定义一个常量，用于保存跳转进来获取到的参数
 
@@ -31,10 +37,86 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
         ],
       ),
 
-      body: new Text(
-        "Text"
+      body: _refreshPage(widget.wifi),
+
+    );
+  }
+
+  Widget _refreshPage(Wifi wifi) {
+
+    return new Container(
+      padding: const EdgeInsets.all(32.0),
+      // 名字和地址
+      child: new Row(
+        children: [
+          new Expanded(
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                new Container(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: new Text(
+                    wifi.name,
+                    style: new TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                new Row(
+                  children: <Widget>[
+                    new Text(
+                      wifi.address,
+                      style: new TextStyle(
+                        color: Colors.grey[500],
+                      ),
+                    ),
+                  ],
+                ),
+
+                new Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    buildButtonColumn(Icons.near_me, 'ROUTE'),
+                    buildButtonColumn(Icons.share, 'SHARE'),
+                  ],
+                ),
+                
+                new Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    new Text("其他信息"),
+                    new Text(wifi.intro)
+                  ],
+                )
+              ],
+            ),
+          ),
+        ],
       ),
 
+    );
+  }
+
+  Column buildButtonColumn(IconData icon, String label) {
+    Color color = Theme.of(context).primaryColor;
+
+    return new Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        new Icon(icon, color: color),
+        new Container(
+          margin: const EdgeInsets.only(top: 8.0),
+          child: new Text(
+            label,
+            style: new TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w400,
+              color: color,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -105,6 +187,8 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 
     AMapLocationClient.startLocation();
   }
+
+
 
   void handleSave() async {
     List notes;
