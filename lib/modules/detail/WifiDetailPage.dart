@@ -1,11 +1,13 @@
 import 'package:amap_location/amap_location.dart';
 import 'package:amap_location/amap_location_option.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../global/model/wifi_model.dart';  // 导入model
+import '../global/model/wifi_model.dart'; // 导入model
 
 import 'package:simple_permissions/simple_permissions.dart';
 import 'package:easy_alert/easy_alert.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 // 标题栏：标题，收藏和取消收藏按钮
 // wifi名称
@@ -16,8 +18,6 @@ import 'package:easy_alert/easy_alert.dart';
 class WifiDetailPage extends StatefulWidget {
   final Wifi wifi; //定义一个常量，用于保存跳转进来获取到的参数
 
-
-
   WifiDetailPage(this.wifi); //构造函数，获取参数
 
   @override
@@ -27,26 +27,26 @@ class WifiDetailPage extends StatefulWidget {
 class _WifiDetailPageState extends State<WifiDetailPage> {
   final String mUserName = "userName";
 
+  var index = 1;
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text("详细信息"),
         actions: <Widget>[
-          new IconButton(icon: const Icon(Icons.favorite), onPressed: handleSave),
+          new IconButton(
+              icon: const Icon(Icons.favorite), onPressed: _handleFavButtonClicked),
         ],
       ),
-
       body: _refreshPage(widget.wifi),
-
     );
   }
 
   Widget _refreshPage(Wifi wifi) {
-
     return new Container(
       padding: const EdgeInsets.all(32.0),
-
       child: new Row(
         children: [
           new Expanded(
@@ -78,8 +78,8 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
                 new Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    buildButtonColumn(Icons.near_me, '导航'),
-                    buildButtonColumn(Icons.share, '分享'),
+                    buildButtonColumn(Icons.near_me, '导航(待完成...)'),
+                    buildButtonColumn(Icons.share, '分享(待完成...)'),
                   ],
                 ),
 
@@ -90,16 +90,17 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
                 new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    new Text("其他信息",
+                    new Text(
+                      "其他信息",
                       style: new TextStyle(
-                      fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     new Text(
-                        wifi.intro,
-                        style: new TextStyle(
-                          color: Colors.grey[500],
-                        ),
+                      wifi.intro,
+                      style: new TextStyle(
+                        color: Colors.grey[500],
+                      ),
                     )
                   ],
                 )
@@ -108,37 +109,42 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
           ),
         ],
       ),
-
     );
   }
 
-  Column buildButtonColumn(IconData icon, String label) {
+  Widget buildButtonColumn(IconData icon, String label) {
     Color color = Theme.of(context).primaryColor;
 
-    return new Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        new Icon(icon, color: color),
-        new Container(
-          margin: const EdgeInsets.only(top: 8.0),
-          child: new Text(
-            label,
-            style: new TextStyle(
-              fontSize: 12.0,
-              fontWeight: FontWeight.w400,
-              color: color,
+    return GestureDetector(
+      onTap: showShortToast,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          new Icon(icon, color: color),
+          new Container(
+            margin: const EdgeInsets.only(top: 8.0),
+            child: new Text(
+              label,
+              style: new TextStyle(
+                fontSize: 12.0,
+                fontWeight: FontWeight.w400,
+                color: color,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
+  void showShortToast() {
+    index ++;
+  }
 
   save() async {
     Future<SharedPreferences> prefs = SharedPreferences.getInstance();
-    prefs.then((SharedPreferences preference){
+    prefs.then((SharedPreferences preference) {
       preference.setString(mUserName, "123");
     });
   }
@@ -159,14 +165,12 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 //      print("数据获取成功：$userName");
 //    });
 
-
 //    Util.save(widget.wifi);
 //
 //    Future<List<Wifi>> favWifiList = Util.getFavWifiList();
 //    favWifiList.then((List<Wifi> favWifiList){
 //      print("我的收藏内容是： " + favWifiList.toString());
 //    });
-
 
 //    WifiProvider wifiProvider = new WifiProvider();
 //    try {
@@ -183,19 +187,24 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 //        });
 //      });
 //    } catch (Exception) {}
-    _checkPersmission();
+    _checkPermission();
 
-    await AMapLocationClient.startup(new AMapLocationOption( desiredAccuracy:CLLocationAccuracy.kCLLocationAccuracyHundredMeters ));
-    await AMapLocationClient.getLocation(true);
+    await AMapLocationClient.startup(new AMapLocationOption(
+        desiredAccuracy: CLLocationAccuracy.kCLLocationAccuracyHundredMeters));
+    AMapLocation location = await AMapLocationClient.getLocation(true);
+    print('定位有没有： ');
+    print("latitude = " + location.latitude.toString());
+    print("longitude = " + location.longitude.toString());
   }
 
-
-  void _checkPersmission() async{
-    bool hasPermission = await SimplePermissions.checkPermission(Permission.WhenInUseLocation);
-    if(!hasPermission){
-      var requestPermissionResult = (await SimplePermissions.requestPermission(Permission.WhenInUseLocation)) as bool;
-      if(!requestPermissionResult){
-        Alert.alert(context,title: "申请定位权限失败");
+  void _checkPermission() async {
+    bool hasPermission =
+        await SimplePermissions.checkPermission(Permission.WhenInUseLocation);
+    if (!hasPermission) {
+      var requestPermissionResult = (await SimplePermissions.requestPermission(
+          Permission.WhenInUseLocation)) as bool;
+      if (!requestPermissionResult) {
+        Alert.alert(context, title: "申请定位权限失败");
         return;
       }
     }
@@ -203,37 +212,13 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
     AMapLocationClient.startLocation();
   }
 
-
-
+  // 存储
   void handleSave() async {
-    List notes;
     var db = new WifiDatabaseHelper();
-
     await db.saveNote(widget.wifi);
-    await db.saveNote(widget.wifi);
-    await db.saveNote(widget.wifi);
-    await db.saveNote(widget.wifi);
-
-    print('=== getAllNotes() ===');
-    notes = await db.getAllNotes();
-    notes.forEach((note) => print(note));
-
-    int count = await db.getCount();
-    print('Count: $count');
-
-    print('=== getNote(1) ===');
-    Wifi note = await db.getNote(1);
-//    print(note.toMap());
-
-    notes = await db.getAllNotes();
-    notes.forEach((note) => print(note));
-
-//    print('=== deleteNote(1) ===');
-//    await db.deleteNote(1);
-//    notes = await db.getAllNotes();
-//    notes.forEach((note) => print(note));
-
-//    await db.close();
   }
 
+  void handleDelete() async {
+    var db = new WifiDatabaseHelper();
+  }
 }

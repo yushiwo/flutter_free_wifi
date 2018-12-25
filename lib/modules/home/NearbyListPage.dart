@@ -14,8 +14,8 @@ class RandomWordsState extends State<NearbyListPage> {
   final TextStyle _biggerFont = const TextStyle(fontSize: 18.0);
 
   final String _url = 'http://apis.juhe.cn/wifi/local?';
-  final double lon = 116.366324;
-  final double lat = 39.905859;
+  final double lon = 120.201798;
+  final double lat = 30.257832;
   final int range = 3000;
 
   //HTTP请求的函数返回值为异步控件Future
