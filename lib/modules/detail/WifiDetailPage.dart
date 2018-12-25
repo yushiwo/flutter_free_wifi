@@ -46,46 +46,61 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 
     return new Container(
       padding: const EdgeInsets.all(32.0),
-      // 名字和地址
+
       child: new Row(
         children: [
           new Expanded(
             child: new Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // 名字
                 new Container(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: new Text(
                     wifi.name,
                     style: new TextStyle(
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
-                new Row(
-                  children: <Widget>[
-                    new Text(
-                      wifi.address,
-                      style: new TextStyle(
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                  ],
-                ),
 
+                new Container(
+                  padding: const EdgeInsets.only(bottom: 24.0),
+                  child: new Text(
+                    wifi.address,
+                    style: new TextStyle(
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ),
+                // 导航和分享
                 new Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    buildButtonColumn(Icons.near_me, 'ROUTE'),
-                    buildButtonColumn(Icons.share, 'SHARE'),
+                    buildButtonColumn(Icons.near_me, '导航'),
+                    buildButtonColumn(Icons.share, '分享'),
                   ],
                 ),
-                
+
+                new Container(
+                  padding: const EdgeInsets.only(top: 24.0),
+                ),
+                // 其它相关信息展示
                 new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    new Text("其他信息"),
-                    new Text(wifi.intro)
+                    new Text("其他信息",
+                      style: new TextStyle(
+                      fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    new Text(
+                        wifi.intro,
+                        style: new TextStyle(
+                          color: Colors.grey[500],
+                        ),
+                    )
                   ],
                 )
               ],
