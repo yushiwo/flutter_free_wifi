@@ -36,6 +36,7 @@ class FavListState extends State<FavListPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: Text("收藏列表"),
       ),
       body: new FutureBuilder<List>(
