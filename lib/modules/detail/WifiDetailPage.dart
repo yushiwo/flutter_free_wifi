@@ -1,13 +1,11 @@
 import 'package:amap_location/amap_location.dart';
 import 'package:amap_location/amap_location_option.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../global/model/wifi_model.dart'; // 导入model
-
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:simple_permissions/simple_permissions.dart';
 import 'package:easy_alert/easy_alert.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 // 标题栏：标题，收藏和取消收藏按钮
 // wifi名称
@@ -34,10 +32,11 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("详细信息"),
+        centerTitle: true,
+        title: Text("Wifi详情"),
         actions: <Widget>[
           new IconButton(
-              icon: const Icon(Icons.favorite), onPressed: _handleFavButtonClicked),
+              icon: const Icon(Icons.favorite), onPressed: showToast),
         ],
       ),
       body: _refreshPage(widget.wifi),
@@ -142,6 +141,7 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
     index ++;
   }
 
+  // 保存当前Wi-Fi信息到本地
   save() async {
     Future<SharedPreferences> prefs = SharedPreferences.getInstance();
     prefs.then((SharedPreferences preference) {
@@ -164,14 +164,14 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 //    userName.then((String userName) {
 //      print("数据获取成功：$userName");
 //    });
-
+//
 //    Util.save(widget.wifi);
 //
 //    Future<List<Wifi>> favWifiList = Util.getFavWifiList();
 //    favWifiList.then((List<Wifi> favWifiList){
 //      print("我的收藏内容是： " + favWifiList.toString());
 //    });
-
+//
 //    WifiProvider wifiProvider = new WifiProvider();
 //    try {
 //      Future<WifiProvider> p = wifiProvider.open();
@@ -187,14 +187,15 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 //        });
 //      });
 //    } catch (Exception) {}
-    _checkPermission();
 
-    await AMapLocationClient.startup(new AMapLocationOption(
-        desiredAccuracy: CLLocationAccuracy.kCLLocationAccuracyHundredMeters));
-    AMapLocation location = await AMapLocationClient.getLocation(true);
-    print('定位有没有： ');
-    print("latitude = " + location.latitude.toString());
-    print("longitude = " + location.longitude.toString());
+
+//    _checkPermission();
+//    await AMapLocationClient.startup(new AMapLocationOption(
+//        desiredAccuracy: CLLocationAccuracy.kCLLocationAccuracyHundredMeters));
+//    AMapLocation location = await AMapLocationClient.getLocation(true);
+//    print('定位有没有： ');
+//    print("latitude = " + location.latitude.toString());
+//    print("longitude = " + location.longitude.toString());
   }
 
   void _checkPermission() async {
@@ -220,5 +221,16 @@ class _WifiDetailPageState extends State<WifiDetailPage> {
 
   void handleDelete() async {
     var db = new WifiDatabaseHelper();
+  }
+
+  void showToast() {
+    Fluttertoast.showToast(
+        msg: "This is Center Short Toast",
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.blue,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
   }
 }

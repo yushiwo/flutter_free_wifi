@@ -26,8 +26,8 @@ dependencies:
   amap_location: 0.1.2
   simple_permissions:
   easy_alert:
-  fluttertoast: ^2.2.2
   flutter_webview_plugin: ^0.3.0+2
+  fluttertoast: ^3.0.4
 
 
 dev_dependencies:
@@ -49,6 +49,12 @@ flutter:
   assets:
       - images/lake.jpg
       - images/pavlova.jpg
+      - images/ic_logo_100.png
+      - images/ic_logo_cbs.png
+      - images/ic_logo_exchange.png
+      - images/ic_logo_kada.png
+      - images/ic_logo_otc.png
+      - images/ic_logo_qlive.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
