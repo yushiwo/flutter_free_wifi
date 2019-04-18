@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_free_wifi/modules/about/AboutPage.dart';
 import 'package:flutter_free_wifi/modules/h5/H5Page.dart';
+import 'package:flutter_free_wifi/modules/home/MainPage.dart';
 import 'package:flutter_free_wifi/modules/myproject/MyProjectPage.dart';
 import './NearbyListPage.dart';
 
@@ -8,11 +9,11 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Free Wi-Fi',
+      title: 'Flutter Free Tools',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: '附近的Wi-Fi'),
+      home: MyHomePage(title: '百宝箱'),
     );
   }
 }
@@ -37,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       drawer: _buildDrawer(),  // 侧边栏
 
-      body: new NearbyListPage(),  // 主页
+      body: new MainPage(),  // 主页
     );
   }
 
