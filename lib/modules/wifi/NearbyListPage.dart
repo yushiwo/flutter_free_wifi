@@ -35,30 +35,61 @@ class RandomWordsState extends State<NearbyListPage> {
 
   @override
   Widget build(BuildContext context){
-    return new RefreshIndicator(
-      child: new FutureBuilder(   //用于懒加载的FutureBuilder对象
-        future: get(lon, lat, range),   //HTTP请求获取数据，将被AsyncSnapshot对象监视
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.none:        //get未执行时
-            case ConnectionState.waiting:     //get正在执行时
-              return new Center(
-                child: new Card(
-                  child: new Text('loading...'),    //在页面中央显示正在加载
-                ),
-              ) ;
-            default:
-              if (snapshot.hasError)    //get执行完成但出现异常
-                return new Text('Error: ${snapshot.error}');
-              else  //get正常执行完成
-                // 创建列表，列表数据来源于snapshot的返回值，而snapshot就是get(widget.newsType)执行完毕时的快照
-                // get(widget.newsType)执行完毕时的快照即函数最后的返回值。
-                return createListView(context, snapshot);
-          }
-        },
+    return new Scaffold(
+      appBar: new AppBar(
+        centerTitle: true,
+        title: new Text("附近的Wi-Fi"),
       ),
-      onRefresh: loadData,
+      body: new RefreshIndicator(
+        child: new FutureBuilder(   //用于懒加载的FutureBuilder对象
+          future: get(lon, lat, range),   //HTTP请求获取数据，将被AsyncSnapshot对象监视
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.none:        //get未执行时
+              case ConnectionState.waiting:     //get正在执行时
+                return new Center(
+                  child: new Card(
+                    child: new Text('loading...'),    //在页面中央显示正在加载
+                  ),
+                ) ;
+              default:
+                if (snapshot.hasError)    //get执行完成但出现异常
+                  return new Text('Error: ${snapshot.error}');
+                else  //get正常执行完成
+                  // 创建列表，列表数据来源于snapshot的返回值，而snapshot就是get(widget.newsType)执行完毕时的快照
+                  // get(widget.newsType)执行完毕时的快照即函数最后的返回值。
+                  return createListView(context, snapshot);
+            }
+          },
+        ),
+        onRefresh: loadData,
+      ),
     );
+
+//      new RefreshIndicator(
+//      child: new FutureBuilder(   //用于懒加载的FutureBuilder对象
+//        future: get(lon, lat, range),   //HTTP请求获取数据，将被AsyncSnapshot对象监视
+//        builder: (BuildContext context, AsyncSnapshot snapshot) {
+//          switch (snapshot.connectionState) {
+//            case ConnectionState.none:        //get未执行时
+//            case ConnectionState.waiting:     //get正在执行时
+//              return new Center(
+//                child: new Card(
+//                  child: new Text('loading...'),    //在页面中央显示正在加载
+//                ),
+//              ) ;
+//            default:
+//              if (snapshot.hasError)    //get执行完成但出现异常
+//                return new Text('Error: ${snapshot.error}');
+//              else  //get正常执行完成
+//                // 创建列表，列表数据来源于snapshot的返回值，而snapshot就是get(widget.newsType)执行完毕时的快照
+//                // get(widget.newsType)执行完毕时的快照即函数最后的返回值。
+//                return createListView(context, snapshot);
+//          }
+//        },
+//      ),
+//      onRefresh: loadData,
+//    );
   }
 
   Widget createListView(BuildContext context, AsyncSnapshot snapshot){

@@ -3,7 +3,7 @@ import 'package:flutter_free_wifi/modules/about/AboutPage.dart';
 import 'package:flutter_free_wifi/modules/h5/H5Page.dart';
 import 'package:flutter_free_wifi/modules/home/MainPage.dart';
 import 'package:flutter_free_wifi/modules/myproject/MyProjectPage.dart';
-import './NearbyListPage.dart';
+import 'package:flutter_free_wifi/modules/routes.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -14,6 +14,7 @@ class HomePage extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: MyHomePage(title: '百宝箱'),
+      routes: routes,
     );
   }
 }

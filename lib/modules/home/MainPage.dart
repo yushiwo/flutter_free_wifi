@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_free_wifi/modules/global/util/Util.dart';
+import 'package:flutter_free_wifi/modules/routes.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 /*
@@ -33,20 +33,21 @@ List<StaggeredTile> _staggeredTiles = const <StaggeredTile>[
 ];
 
 List<Widget> _tiles = const <Widget>[
-  const _Example01Tile(Colors.green, Icons.highlight, "手电筒"),
-  const _Example01Tile(Colors.lightBlue, Icons.wifi, "附近Wi-Fi"),
-  const _Example01Tile(Colors.amber, Icons.phone_android, "手机号码归属地"),
-  const _Example01Tile(Colors.brown, Icons.library_books, "新闻头条"),
-  const _Example01Tile(Colors.deepOrange, Icons.history, "历史上的今天"),
-  const _Example01Tile(Colors.indigo, Icons.child_care, "笑话"),
+  const _Example01Tile(Colors.green, Icons.highlight, "手电筒", flashRoute),
+  const _Example01Tile(Colors.lightBlue, Icons.wifi, "附近Wi-Fi", wifiRoute),
+  const _Example01Tile(Colors.amber, Icons.phone_android, "手机号码归属地", phoneRoute),
+  const _Example01Tile(Colors.brown, Icons.library_books, "新闻头条", topNewsRoute),
+  const _Example01Tile(Colors.deepOrange, Icons.history, "历史上的今天", historyRoute),
+  const _Example01Tile(Colors.indigo, Icons.child_care, "笑话", jokeRoute),
 ];
 
 class _Example01Tile extends StatelessWidget {
-  const _Example01Tile(this.backgroundColor, this.iconData, this.iconName);
+  const _Example01Tile(this.backgroundColor, this.iconData, this.iconName, this.routePath);
 
   final Color backgroundColor;
   final IconData iconData;
   final String iconName;
+  final String routePath;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +55,7 @@ class _Example01Tile extends StatelessWidget {
       color: backgroundColor,
       child: new InkWell(
         onTap: () {
-          Util.showToast(iconName);
+          Navigator.of(context).pushNamed(routePath);
         },
         child: new Center(
           child: new Padding(
